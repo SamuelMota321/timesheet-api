@@ -32,7 +32,7 @@ public class UserController {
     private TokenService tokenService;
 
 
-    @PostMapping
+    @PostMapping(value = "/register")
     public ResponseEntity<User> registerUser(@Valid @RequestBody UserSchema userSchema) {
         UserRegisterDTO userRegisterDTO = new UserRegisterDTO(userSchema.getEmail(), userSchema.getPassword(), userSchema.getUserType());
         User savedUser = userService.registerUser(userRegisterDTO);

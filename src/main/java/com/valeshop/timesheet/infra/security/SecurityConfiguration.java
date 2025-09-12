@@ -46,15 +46,15 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/users").hasRole("Administrador")
-                        .requestMatchers(HttpMethod.POST, "/users/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMINISTRADOR")
+                                .requestMatchers(HttpMethod.POST, "/users/login").permitAll()
 //                        .requestMatchers(HttpMethod.POST, "/auth/registro-tecnico").hasRole("Administrador")
 //                        .requestMatchers(HttpMethod.POST, "/tecnico").hasRole("TECNICO")
 //                        .requestMatchers(HttpMethod.PATCH, "/tecnico").hasRole("TECNICO")
 //                        .requestMatchers(HttpMethod.GET, "/competicao").hasRole("TECNICO")
 //                        .requestMatchers(HttpMethod.GET, "/parciais").permitAll()
 //                        .requestMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                                .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
