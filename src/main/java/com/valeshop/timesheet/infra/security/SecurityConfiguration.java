@@ -3,12 +3,12 @@ package com.valeshop.timesheet.infra.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,19 +42,12 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // Permitir H2 console em iframes
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                                .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMINISTRADOR")
-                                .requestMatchers(HttpMethod.POST, "/users/login").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/auth/registro-tecnico").hasRole("Administrador")
-//                        .requestMatchers(HttpMethod.POST, "/tecnico").hasRole("TECNICO")
-//                        .requestMatchers(HttpMethod.PATCH, "/tecnico").hasRole("TECNICO")
-//                        .requestMatchers(HttpMethod.GET, "/competicao").hasRole("TECNICO")
-//                        .requestMatchers(HttpMethod.GET, "/parciais").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
-                                .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -71,3 +64,4 @@ public class SecurityConfiguration {
     }
 
 }
+

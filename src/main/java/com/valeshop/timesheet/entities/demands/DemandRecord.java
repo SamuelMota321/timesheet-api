@@ -36,7 +36,7 @@ public class DemandRecord implements Serializable {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "id_user")
-    private User user; // a relação dependente leva a coluna no construtor
+    private User user;
 
     public DemandRecord(long id, String title, String gitLink, Integer priority, String status, Date date, String description, User user) {
         this.id = id;

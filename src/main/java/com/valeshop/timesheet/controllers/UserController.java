@@ -42,7 +42,7 @@ public class UserController {
     @PostMapping(value = "/login")
     public ResponseEntity<?> login(@RequestBody AutenticationDTO data) {
         try{
-            UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
+            UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
             Authentication auth = this.authenticationManager.authenticate(usernamePassword);
             User users = (User) auth.getPrincipal();
             String token = tokenService.generateToken(users);

@@ -20,6 +20,7 @@ import java.util.Set;
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements Serializable, UserDetails {
@@ -29,6 +30,8 @@ public class User implements Serializable, UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
+
+    @Column(unique = true, name = "email")
     protected String email;
     protected String password;
     protected Integer userType;
@@ -62,7 +65,7 @@ public class User implements Serializable, UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return this.email;
     }
 
     @Override
@@ -85,3 +88,4 @@ public class User implements Serializable, UserDetails {
         return true;
     }
 }
+
