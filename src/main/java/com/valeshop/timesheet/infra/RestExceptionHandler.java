@@ -1,5 +1,6 @@
 package com.valeshop.timesheet.infra;
 
+import com.valeshop.timesheet.exceptions.DemandNotFoundExeption;
 import com.valeshop.timesheet.exceptions.InvalidPasswordException;
 import com.valeshop.timesheet.exceptions.UserAlreadyExistsException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -38,6 +39,19 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         String message = "O email fornecido já está em uso.";
         RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.CONFLICT, message, 409);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(responseMessage);
+    }
+
+    @ExceptionHandler(IndexOutOfBoundsException.class)
+    private ResponseEntity<RestResponseMessage> handleIndexOutOfBoundsException(IndexOutOfBoundsException exception){
+        String message = "O index especificado não existe.";
+        RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.NOT_FOUND, message, 404);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseMessage);
+    }
+    @ExceptionHandler(DemandNotFoundExeption.class)
+    private ResponseEntity<RestResponseMessage> handleDemandNotFoundExeption(DemandNotFoundExeption exception){
+        String message = "A demanda especificada não existe.";
+        RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.NOT_FOUND, message, 404);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseMessage);
     }
 
     @Override
