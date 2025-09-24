@@ -1,5 +1,6 @@
 package com.valeshop.timesheet.services;
 
+import com.valeshop.timesheet.exceptions.CannotSendEmailCorrectlyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     @Autowired
-    private JavaMailSender mailSender;
+    private JavaMailSender emailSender;
 
     @Async // Para não bloquear a thread principal durante o envio de e-mail
     public void sendVerificationEmail(String to, String token) {
@@ -41,10 +42,10 @@ public class EmailService {
             message.setText(text);
             message.setFrom("no-reply@timesheetapi.com"); // Pode ser o seu e-mail de envio
 
-            mailSender.send(message);
+            emailSender.send(message);
         } catch (Exception e) {
-            // É importante ter um log de erros para o envio de e-mails
             System.err.println("Erro ao enviar e-mail para " + to + ": " + e.getMessage());
+            throw new CannotSendEmailCorrectlyException();
         }
     }
 }
