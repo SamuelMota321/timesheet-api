@@ -70,7 +70,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("Utilizador não encontrado com o e-mail: " + dataUser.email()));
 
         user.setPasswordResetToken(UUID.randomUUID().toString());
-        user.setPasswordResetTokenExpiry(LocalDateTime.now().plusHours(1));
+        user.setPasswordResetTokenExpiry(LocalDateTime.now().plusMinutes(20));
         userRepository.save(user);
 
         emailService.sendPasswordResetEmail(user.getEmail(), user.getPasswordResetToken());
