@@ -3,11 +3,13 @@ package com.valeshop.timesheet.infra;
 import com.valeshop.timesheet.exceptions.DemandNotFoundExeption;
 import com.valeshop.timesheet.exceptions.InvalidPasswordException;
 import com.valeshop.timesheet.exceptions.UserAlreadyExistsException;
+import com.valeshop.timesheet.exceptions.UserNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,6 +22,15 @@ import java.util.Map;
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
+        System.err.println("Exceção capturada pelo manipulador genérico: " + ex.getClass().getName());
+        ex.printStackTrace(); // Imprime a stack trace completa para análise.
+
+        RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro inesperado. Verifique os logs do servidor.", 500);
+        return new ResponseEntity<>(responseMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     private ResponseEntity<RestResponseMessage> userAlreadyExistsHandler(UserAlreadyExistsException exception) {
@@ -52,6 +63,19 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         String message = "A demanda especificada não existe.";
         RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.NOT_FOUND, message, 404);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseMessage);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    private ResponseEntity<RestResponseMessage> userNotFoundHandler(UserNotFoundException exception) {
+        RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.NOT_FOUND, exception.getMessage(), 404);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseMessage);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        String message = "Corpo da requisição ausente ou mal formatado.";
+        RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.BAD_REQUEST, message, 400);
+        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
     }
 
     @Override

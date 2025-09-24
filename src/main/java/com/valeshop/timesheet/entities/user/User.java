@@ -9,11 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 
 @Entity
 @Table(name = "tb_users")
@@ -35,6 +35,15 @@ public class User implements Serializable, UserDetails {
     protected String email;
     protected String password;
     protected Integer userType;
+
+    // Campos para validação de e-mail
+    private boolean enabled = false; // Começa como false por defeito
+    private String verificationToken;
+
+    // Campos para redefinição de senha
+    private String passwordResetToken;
+    private LocalDateTime passwordResetTokenExpiry;
+
 
     @OneToMany(mappedBy = "user")
     private final Set<DemandRecord> demand = new HashSet<>();
@@ -83,9 +92,10 @@ public class User implements Serializable, UserDetails {
         return true;
     }
 
+    // O Spring Security irá usar este método para verificar se a conta está ativa
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }
 }
 

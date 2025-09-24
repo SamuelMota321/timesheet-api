@@ -9,11 +9,8 @@ import java.util.List;
 @Getter
 @Setter
 public class DemandRegisterSchema {
-    @JsonProperty("problems")
     protected List<String> problems;
-    @JsonProperty("observations")
     protected List<String> observations;
-    @JsonProperty("comments")
     protected List<String> comments;
 
 }
