@@ -55,11 +55,11 @@ public class UserService {
                 .orElse(null);
 
         if (user == null || user.isEnabled()) {
-            return false; // Utilizador não encontrado ou já verificado
+            return false;
         }
 
         user.setEnabled(true);
-        user.setVerificationToken(null); // Limpa o token após a verificação
+        user.setVerificationToken(null);
         userRepository.save(user);
 
         return true;

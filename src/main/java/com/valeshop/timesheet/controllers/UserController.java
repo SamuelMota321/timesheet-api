@@ -39,20 +39,13 @@ public class UserController {
     @Autowired
     private TokenService tokenService;
 
-    @AllArgsConstructor
-    @Getter
-    private static class UserRegisterResponse {
-        private User user;
-        private String message;
-
-    }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserSchema userSchema) {
         UserRegisterDTO userRegisterDTO = new UserRegisterDTO(userSchema.getEmail(), userSchema.getPassword(), userSchema.getUserType());
         User user = userService.registerUser(userRegisterDTO);
-        UserRegisterResponse userRegisterResponse = new UserRegisterResponse(user, "Conta criada com sucesso, por favor verifique seu email!");
-        return ResponseEntity.status(HttpStatus.CREATED).body(userRegisterResponse);
+        RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.CREATED, "Conta criada com sucesso, por favor verifique seu email!",201);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
     }
 
     @GetMapping("/verify-email")
