@@ -36,11 +36,11 @@ public class User implements Serializable, UserDetails {
     protected String password;
     protected Integer userType;
 
-    // Campos para validação de e-mail
-    private boolean enabled = false; // Começa como false por defeito
+    private boolean enabled = false;
     private String verificationToken;
+    private LocalDateTime verificationTokenExpiry;
 
-    // Campos para redefinição de senha
+
     private String passwordResetToken;
     private LocalDateTime passwordResetTokenExpiry;
 

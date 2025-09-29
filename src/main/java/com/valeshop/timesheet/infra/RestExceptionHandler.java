@@ -40,7 +40,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
-    private ResponseEntity<RestResponseMessage> handleDataIntegrityViolation(InvalidPasswordException exception) {
+    private ResponseEntity<RestResponseMessage> handleInvalidPassword(InvalidPasswordException exception) {
         String message = "Email ou senha incorreto";
         RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.CONFLICT, message, 409);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(responseMessage);
@@ -49,6 +49,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     private ResponseEntity<RestResponseMessage> handleDataIntegrityViolation(DataIntegrityViolationException exception) {
         String message = "O email fornecido já está em uso.";
+        RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.CONFLICT, message, 409);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(responseMessage);
+    }
+    @ExceptionHandler(IllegalStateException.class)
+    private ResponseEntity<RestResponseMessage> handleIllegalStateException(IllegalStateException exception) {
+        String message = "Esta conta já foi verificada.";
         RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.CONFLICT, message, 409);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(responseMessage);
     }
@@ -73,7 +79,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(DisabledException.class)
-    private ResponseEntity<RestResponseMessage> userNotFoundHandler(DisabledException exception) {
+    private ResponseEntity<RestResponseMessage> disabledExceptionHandler(DisabledException exception) {
         RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.BAD_REQUEST, exception.getMessage(), 400);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMessage);
     }

@@ -13,7 +13,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender emailSender;
 
-    @Async // Para não bloquear a thread principal durante o envio de e-mail
+    @Async
     public void sendVerificationEmail(String to, String token) {
         String subject = "Validação de E-mail - Timesheet API";
         // ATENÇÃO: Num projeto real, a URL base deve vir de um ficheiro de configuração.

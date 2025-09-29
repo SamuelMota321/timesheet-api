@@ -39,7 +39,6 @@ public class UserService {
             newUser = new User(null, dataUser.email(), encryptedPassword, UserType.Normal);
         }
 
-        // Gera e define o token de verificação
         String token = UUID.randomUUID().toString();
         newUser.setVerificationToken(token);
 
@@ -97,6 +96,21 @@ public class UserService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UserNotFoundException("Utilizador não encontrado no contexto de segurança."));
         return new UserResponseDTO(user);
+    }
+
+    public void resendVerificationEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Utilizador não encontrado com o e-mail: " + email));
+
+        if (user.isEnabled()) {
+            throw new IllegalStateException();
+        }
+
+        user.setVerificationToken(UUID.randomUUID().toString());
+        user.setVerificationTokenExpiry(LocalDateTime.now().plusMinutes(20));
+        userRepository.save(user);
+
+        emailService.sendVerificationEmail(user.getEmail(), user.getVerificationToken());
     }
 }
 
