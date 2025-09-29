@@ -59,7 +59,6 @@ public class SecurityConfiguration {
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
-//                .exceptionHandling(e -> e.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
