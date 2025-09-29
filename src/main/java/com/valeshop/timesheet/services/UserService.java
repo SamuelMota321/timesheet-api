@@ -66,7 +66,7 @@ public class UserService {
 
     public void requestPasswordReset(UserForgotPasswordDTO dataUser) {
         User user = userRepository.findByEmail(dataUser.email())
-                .orElseThrow(() -> new UserNotFoundException("Utilizador não encontrado com o e-mail: " + dataUser.email()));
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o e-mail: " + dataUser.email()));
 
         user.setPasswordResetToken(UUID.randomUUID().toString());
         user.setPasswordResetTokenExpiry(LocalDateTime.now().plusMinutes(20));
