@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -69,6 +70,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<RestResponseMessage> userNotFoundHandler(UserNotFoundException exception) {
         RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.NOT_FOUND, exception.getMessage(), 404);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseMessage);
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    private ResponseEntity<RestResponseMessage> userNotFoundHandler(DisabledException exception) {
+        RestResponseMessage responseMessage = new RestResponseMessage(HttpStatus.BAD_REQUEST, exception.getMessage(), 400);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMessage);
     }
 
     @Override
