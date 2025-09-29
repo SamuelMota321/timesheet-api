@@ -94,13 +94,13 @@ public class UserService {
     public UserResponseDTO getAuthenticatedUserProfile() {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UserNotFoundException("Utilizador não encontrado no contexto de segurança."));
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado no contexto de segurança."));
         return new UserResponseDTO(user);
     }
 
     public void resendVerificationEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Utilizador não encontrado com o e-mail: " + email));
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o e-mail: " + email));
 
         if (user.isEnabled()) {
             throw new IllegalStateException();
