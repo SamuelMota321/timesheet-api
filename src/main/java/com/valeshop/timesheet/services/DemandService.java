@@ -6,11 +6,13 @@ import com.valeshop.timesheet.entities.user.User;
 import com.valeshop.timesheet.exceptions.DemandNotFoundExeption;
 import com.valeshop.timesheet.repositories.DemandRepository;
 import com.valeshop.timesheet.schemas.DemandRegisterSchema;
+import com.valeshop.timesheet.schemas.DemandUpdateSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service
 public class DemandService {
@@ -41,6 +43,35 @@ public class DemandService {
         return demandRepository.save(newDemand);
     }
 
+    private <T> void updateFieldIfNotNull(T newValue, Consumer<T> setter) {
+        if (newValue == null) {
+            return;
+        }
+
+        if (newValue instanceof String && ((String) newValue).isBlank()) {
+            return;
+        }
+        setter.accept(newValue);
+    }
+
+    public DemandRecord demandUpdate(DemandUpdateSchema demandSchema, Long demandId) {
+        DemandRecord demand = demandRepository.findById(demandId)
+                .orElseThrow(DemandNotFoundExeption::new);
+
+        updateFieldIfNotNull(demandSchema.getTitle(), demand::setTitle);
+        updateFieldIfNotNull(demandSchema.getGitLink(), demand::setGitLink);
+        updateFieldIfNotNull(demandSchema.getPriority(), demand::setPriority);
+        updateFieldIfNotNull(demandSchema.getStatus(), demand::setStatus);
+        updateFieldIfNotNull(demandSchema.getDate(), demand::setDate);
+        updateFieldIfNotNull(demandSchema.getDescription(), demand::setDescription);
+
+        return demand;
+    }
+
+
+    public DemandRecord findDemandById(Long demandId) {
+        return demandRepository.findById(demandId).orElseThrow(DemandNotFoundExeption::new);
+    }
 
     public DemandRecord registerProblemObservationOrComment(DemandRegisterSchema registerData, Long demandId) {
         DemandRecord demandRecord = demandRepository.findById(demandId)
@@ -76,7 +107,7 @@ public class DemandService {
         return demandRecord;
     }
 
-    public DemandRecord updateProblemObservationOrComment(DemandRegisterSchema registerData, int index, Long demandId, Long userId){
+    public DemandRecord updateProblemObservationOrComment(DemandRegisterSchema registerData, int index, Long demandId, Long userId) {
         DemandRecord demandRecord = demandRepository.findByIdAndUserId(demandId, userId)
                 .orElseThrow(DemandNotFoundExeption::new);
 

@@ -42,7 +42,7 @@ public class EmailService {
     public void sendVerificationEmail(String to, String token) {
         String subject = "Validação de E-mail - Timesheet API";
         // ATENÇÃO: Num projeto real, a URL base deve vir de um ficheiro de configuração.
-        String verificationUrl = "http://localhost:4200/users/verify-email?token=" + token;
+        String verificationUrl = "http://localhost:4200/verify-email?token=" + token;
         String resendUrl = "http://localhost:4200/resend-verification";
 
         // Corpo do e-mail em HTML
