@@ -27,6 +27,7 @@ public class DemandRecord implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
+    protected String owner;
     protected String title;
     protected String gitLink;
     protected Integer priority;
@@ -42,8 +43,9 @@ public class DemandRecord implements Serializable {
     @JoinColumn(name = "id_user")
     private User user;
 
-    public DemandRecord(Long id, String title, String gitLink, Integer priority, String status, Date date, String description, User user) {
+    public DemandRecord(Long id, String owner ,String title, String gitLink, Integer priority, String status, Date date, String description, User user) {
         this.id = id;
+        this.owner = owner;
         this.title = title;
         this.gitLink = gitLink;
         this.priority = priority;

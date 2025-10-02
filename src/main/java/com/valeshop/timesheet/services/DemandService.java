@@ -3,8 +3,11 @@ package com.valeshop.timesheet.services;
 import com.valeshop.timesheet.entities.demands.DemandRecord;
 import com.valeshop.timesheet.entities.demands.DemandRegisterDTO;
 import com.valeshop.timesheet.entities.user.User;
+import com.valeshop.timesheet.entities.user.UserType;
 import com.valeshop.timesheet.exceptions.DemandNotFoundExeption;
+import com.valeshop.timesheet.exceptions.UserNotFoundException;
 import com.valeshop.timesheet.repositories.DemandRepository;
+import com.valeshop.timesheet.repositories.UserRepository;
 import com.valeshop.timesheet.schemas.DemandRegisterSchema;
 import com.valeshop.timesheet.schemas.DemandUpdateSchema;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,9 @@ public class DemandService {
     @Autowired
     DemandRepository demandRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     public List<DemandRecord> getAllDemandRecord() {
         return demandRepository.findAll();
     }
@@ -28,9 +34,25 @@ public class DemandService {
         return demandRepository.findAllByUserId(id);
     }
 
+    private static String getUsernameFromEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            return email;
+        }
+
+        int atIndex = email.indexOf('@');
+
+        if (atIndex != -1) {
+            return email.substring(0, atIndex);
+        } else {
+            return email;
+        }
+    }
     public DemandRecord registerDemand(DemandRegisterDTO dataUser, User user) {
+        String owner = getUsernameFromEmail(user.getEmail());
+
         DemandRecord newDemand = new DemandRecord(
                 null,
+                owner,
                 dataUser.title(),
                 dataUser.gitlink(),
                 dataUser.priority(),
@@ -107,9 +129,20 @@ public class DemandService {
         return demandRecord;
     }
 
+    private DemandRecord findDemandForModification(Long demandId, User currentUser) {
+        if (currentUser.getUserType() == UserType.Administrador) {
+            return demandRepository.findById(demandId)
+                    .orElseThrow(DemandNotFoundExeption::new);
+        } else {
+            return demandRepository.findByIdAndUserId(demandId, currentUser.getId())
+                    .orElseThrow(DemandNotFoundExeption::new);
+        }
+    }
+
     public DemandRecord updateProblemObservationOrComment(DemandRegisterSchema registerData, int index, Long demandId, Long userId) {
-        DemandRecord demandRecord = demandRepository.findByIdAndUserId(demandId, userId)
-                .orElseThrow(DemandNotFoundExeption::new);
+        User currentUser = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        DemandRecord demandRecord = findDemandForModification(demandId, currentUser);
+
 
         if (registerData.getObservations() != null && !registerData.getObservations().isEmpty()) {
             List<String> existingObservations = demandRecord.getObservations();
@@ -175,8 +208,8 @@ public class DemandService {
     }
 
     public void deleteComment(int index, Long demandId, Long userId) {
-        DemandRecord demandRecord = demandRepository.findByIdAndUserId(demandId, userId)
-                .orElseThrow(DemandNotFoundExeption::new);
+        User currentUser = userRepository.findById(userId).orElseThrow(RuntimeException::new);
+        DemandRecord demandRecord = findDemandForModification(demandId, currentUser);
 
         List<String> existingComments = demandRecord.getComments();
 

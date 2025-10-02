@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -107,5 +108,11 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> getAuthenticatedUserProfile() {
         UserResponseDTO userResponse = userService.getAuthenticatedUserProfile();
         return ResponseEntity.ok(userResponse);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok().body(users);
     }
 }

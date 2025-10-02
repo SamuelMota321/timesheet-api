@@ -86,6 +86,7 @@ public class DemandController {
         List<DemandRecord> demands = demandService.getUserAllDemandRecord(user.getId());
         return ResponseEntity.ok().body(demands);
     }
+
     @GetMapping("/{demandId}")
     public ResponseEntity<DemandRecord> getDemandById(@PathVariable Long demandId){
         DemandRecord demands = demandService.findDemandById(demandId);

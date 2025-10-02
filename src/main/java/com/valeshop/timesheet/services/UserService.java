@@ -5,12 +5,12 @@ import com.valeshop.timesheet.exceptions.UserAlreadyExistsException;
 import com.valeshop.timesheet.exceptions.UserNotFoundException;
 import com.valeshop.timesheet.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -96,6 +96,9 @@ public class UserService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado no contexto de segurança."));
         return new UserResponseDTO(user);
+    }
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     public void resendVerificationEmail(String email) {
