@@ -10,11 +10,16 @@ import com.valeshop.timesheet.repositories.DemandRepository;
 import com.valeshop.timesheet.repositories.UserRepository;
 import com.valeshop.timesheet.schemas.DemandRegisterSchema;
 import com.valeshop.timesheet.schemas.DemandUpdateSchema;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @Service
@@ -76,18 +81,41 @@ public class DemandService {
         setter.accept(newValue);
     }
 
-    public DemandRecord demandUpdate(DemandUpdateSchema demandSchema, Long demandId) {
+    @Transactional
+    public DemandRecord demandUpdate(DemandUpdateSchema demandSchema, Long demandId, User currentUser) {
         DemandRecord demand = demandRepository.findById(demandId)
                 .orElseThrow(DemandNotFoundExeption::new);
+
+        // Lógica de atualização do dono da demanda
+        if (demandSchema.getUserId() != null && !Objects.equals(demand.getUser().getId(), demandSchema.getUserId())) {
+            if (currentUser.getUserType() != UserType.Administrador) {
+                throw new AccessDeniedException("Apenas administradores podem reatribuir demandas.");
+            }
+            User newOwner = userRepository.findById(demandSchema.getUserId())
+                    .orElseThrow(() -> new UserNotFoundException("Novo usuário responsável não encontrado."));
+            demand.setUser(newOwner);
+            demand.setOwner(getUsernameFromEmail(newOwner.getEmail()));
+        }
 
         updateFieldIfNotNull(demandSchema.getTitle(), demand::setTitle);
         updateFieldIfNotNull(demandSchema.getGitLink(), demand::setGitLink);
         updateFieldIfNotNull(demandSchema.getPriority(), demand::setPriority);
-        updateFieldIfNotNull(demandSchema.getStatus(), demand::setStatus);
+
+        String originalStatus = demand.getStatus();
+        String newStatus = demandSchema.getStatus();
+        if (newStatus != null && !newStatus.equals(originalStatus)) {
+            if ("Concluída".equalsIgnoreCase(newStatus)) {
+                demand.setCompletionDate(new Date());
+            } else if ("Concluída".equalsIgnoreCase(originalStatus)) {
+                demand.setCompletionDate(null);
+            }
+            demand.setStatus(newStatus);
+        }
+
         updateFieldIfNotNull(demandSchema.getDate(), demand::setDate);
         updateFieldIfNotNull(demandSchema.getDescription(), demand::setDescription);
 
-        return demand;
+        return demandRepository.save(demand);
     }
 
 

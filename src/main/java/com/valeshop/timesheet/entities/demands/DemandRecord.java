@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -37,6 +38,12 @@ public class DemandRecord implements Serializable {
     protected List<String> problems;
     protected List<String> observations;
     protected List<String> comments;
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", updatable = false)
+    private Date createdAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date completionDate;
 
     @JsonIgnore
     @ManyToOne

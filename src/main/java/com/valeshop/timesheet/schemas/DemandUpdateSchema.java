@@ -17,4 +17,5 @@ public class DemandUpdateSchema {
     protected String status;
     protected Date date;
     protected String description;
+    protected Long userId;
 }

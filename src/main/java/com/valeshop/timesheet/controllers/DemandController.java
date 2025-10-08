@@ -51,11 +51,15 @@ public class DemandController {
     @PatchMapping("/update/{demandId}")
     @Transactional
     public ResponseEntity<DemandRecord> updateDemand(@RequestBody DemandUpdateSchema demandSchema, @PathVariable Long demandId) {
-        DemandRecord demandRecordsSaved = demandService.demandUpdate(demandSchema,demandId);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepository.findByEmail(subject)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado no contexto de segurança."));
+        DemandRecord demandRecordsSaved = demandService.demandUpdate(demandSchema, demandId, currentUser);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(demandRecordsSaved);
 
     }
+
 
     @PatchMapping(value = "/register/{demandId}")
     @Transactional
