@@ -92,7 +92,6 @@ public class User implements Serializable, UserDetails {
         return true;
     }
 
-    // O Spring Security irá usar este método para verificar se a conta está ativa
     @Override
     public boolean isEnabled() {
         return this.enabled;

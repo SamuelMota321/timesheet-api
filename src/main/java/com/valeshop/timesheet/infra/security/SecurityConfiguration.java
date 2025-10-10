@@ -1,6 +1,7 @@
 package com.valeshop.timesheet.infra.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,14 +28,13 @@ public class SecurityConfiguration {
 
     @Autowired
     SecurityFilter securityFilter;
-//
-//    @Autowired
-//    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("", "http://localhost:4200"));
+        configuration.setAllowedOrigins(Arrays.asList("", frontendUrl));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
         configuration.setAllowCredentials(true);

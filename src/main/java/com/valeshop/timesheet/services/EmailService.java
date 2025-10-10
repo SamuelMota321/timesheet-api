@@ -18,7 +18,9 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
-    // --- MÉTODO PRINCIPAL DE ENVIO (AGORA PRIVADO E ATUALIZADO) ---
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     @Async
     private void sendHtmlEmail(String to, String subject, String htmlBody) {
         try {
@@ -40,12 +42,10 @@ public class EmailService {
 
 
     public void sendVerificationEmail(String to, String token) {
-        String subject = "Validação de E-mail - Timesheet API";
-        // ATENÇÃO: Num projeto real, a URL base deve vir de um ficheiro de configuração.
-        String verificationUrl = "http://localhost:4200/verify-email?token=" + token;
-        String resendUrl = "http://localhost:4200/resend-verification";
+        String subject = "Validação de E-mail";
+        String verificationUrl = frontendUrl + "/verify-email?token=" + token;
+        String resendUrl = frontendUrl + "/resend-verification";
 
-        // Corpo do e-mail em HTML
         String htmlBody = "<h1>Bem-vindo ao Controle de Tarefas ValeShop!</h1>"
                 + "<p>Por favor, clique no botão abaixo para validar o seu e-mail:</p>"
                 + "<a href=\"" + verificationUrl + "\" style=\"background-color:#007bff;color:#ffffff;padding:10px 15px;text-decoration:none;border-radius:5px;\">Validar Meu E-mail</a>"
@@ -56,9 +56,8 @@ public class EmailService {
     }
 
     public void sendPasswordResetEmail(String to, String token) {
-        String subject = "Redefinição de Senha - Timesheet API";
-        // ATENÇÃO: Num projeto real, a URL base do frontend deve vir de um ficheiro de configuração.
-        String resetUrl = "http://localhost:4200/reset-password?token=" + token;
+        String subject = "Redefinição de Senha";
+        String resetUrl = frontendUrl + "/reset-password?token=" + token;
 
         String htmlBody = "<h1>Redefinição de Senha</h1>"
                 + "<p>Você solicitou a redefinição da sua senha. Clique no botão abaixo para criar uma nova senha:</p>"
